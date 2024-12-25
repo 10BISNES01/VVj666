@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting Signal Predictor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('https://i.gifer.com/7rd3.gif') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            width: calc(100% - 20px);
+            max-width: 600px;
+        }
+
+        .history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            background: #6A0DAD;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        #signal {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #6A0DAD;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #8A2BE2;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #6A0DAD;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <input id="coefficientInput" placeholder="Введите коэффициент (например: 2.5)" />
+        <div class="history" id="history"></div>
+    </div>
+
+    <div class="container">
+        <h1>Betting Signal Predictor</h1>
+        <div id="signal">Введите коэффициенты для анализа</div>
+        <button id="generateSignal">Получить сигнал</button>
+    </div>
+
+    <script>
+        const historyElement = document.getElementById('history');
+        const signalElement = document.getElementById('signal');
+        const coefficientInput = document.getElementById('coefficientInput');
+        const generateSignalButton = document.getElementById('generateSignal');
+
+        let coefficients = [];
+
+        coefficientInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                const value = parseFloat(coefficientInput.value);
+                if (!isNaN(value)) {
+                    coefficients.push(value);
+                    updateHistory();
+                    coefficientInput.value = '';
+                } else {
+                    alert('Введите корректное число!');
+                }
+            }
+        });
+
+        generateSignalButton.addEventListener('click', () => {
+            if (coefficients.length < 3) {
+                signalElement.innerText = "Недостаточно данных для прогноза.";
+                return;
+            }
+
+            const prediction = predictNextCoefficient(coefficients);
+            signalElement.innerText = `Прогноз на следующий раунд: ${prediction}`;
+        });
+
+        function updateHistory() {
+            historyElement.innerHTML = '';
+            coefficients.forEach((coef, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerText = `${index + 1}: ${coef}`;
+                historyElement.appendChild(item);
+            });
+        }
+
+        function predictNextCoefficient(data) {
+            // Продвинутая логика предсказания на основе тренда и среднего значения
+            const sum = data.reduce((a, b) => a + b, 0);
+            const average = sum / data.length;
+            const trend = data[data.length - 1] - data[data.length - 2];
+
+            // Прогноз на основе тренда и среднего значения
+            const prediction = average + trend * 0.5;
+
+            return prediction.toFixed(2);
+        }
+    </script>
+</body>
+</html>
